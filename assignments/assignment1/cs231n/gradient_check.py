@@ -1,6 +1,6 @@
 from __future__ import print_function
 from builtins import range
-from past.builtins import xrange
+# from past.builtins import xrange
 
 import numpy as np
 from random import randrange
@@ -108,25 +108,32 @@ def eval_numerical_gradient_net(net, inputs, output, h=1e-5):
 
 def grad_check_sparse(f, x, analytic_grad, num_checks=10, h=1e-5):
     """
-    sample a few random elements and only return numerical
-    in this dimensions.
+    对一些随机元素进行采样，只返回该维度的数值。用于检查数值梯度和解析梯度之间的相对误差
+    f: 一个接受输入向量 x 并返回一个标量的函数
+    x: 输入向量
+    analytic_grad: 解析梯度
+    num_checks: 进行梯度检查的次数
+    h: 用于计算数值梯度的微小增量。
     """
 
     for i in range(num_checks):
+        # 从输入向量的每个维度中随机选择一个索引，形成一个元组 ix。这样就在输入向量中随机选择了一个位置进行数值梯度检查。
         ix = tuple([randrange(m) for m in x.shape])
 
-        oldval = x[ix]
-        x[ix] = oldval + h  # increment by h
-        fxph = f(x)  # evaluate f(x + h)
-        x[ix] = oldval - h  # increment by h
-        fxmh = f(x)  # evaluate f(x - h)
-        x[ix] = oldval  # reset
+        oldval = x[ix] # 保存选择的维度的原始值。
+        x[ix] = oldval + h  # 将选择的维度增加微小的增量 h
+        fxph = f(x)  # 计算修改后的输入向量 x 对应的函数值
+        x[ix] = oldval - h  # 将选择的维度减小微小的增量 h
+        fxmh = f(x)  # 计算修改后的输入向量 x 对应的函数值
+        x[ix] = oldval  # 还原选择的维度的原始值
 
-        grad_numerical = (fxph - fxmh) / (2 * h)
-        grad_analytic = analytic_grad[ix]
+        grad_numerical = (fxph - fxmh) / (2 * h) # 计算数值梯度，通过中心差分法得到(f(x + h) - f(x - h)) / (2h)
+        grad_analytic = analytic_grad[ix] # 从解析梯度中获取相应的值
+        # 计算相对误差，使用绝对值，分母加上一个很小的数值，避免分母为零
         rel_error = abs(grad_numerical - grad_analytic) / (
             abs(grad_numerical) + abs(grad_analytic)
         )
+        # 打印数值梯度、解析梯度以及相对误差。这样可以用于观察数值梯度和解析梯度之间的差异。
         print(
             "numerical: %f analytic: %f, relative error: %e"
             % (grad_numerical, grad_analytic, rel_error)
