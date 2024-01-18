@@ -3,15 +3,15 @@ from .layers import *
 
 def affine_relu_forward(x, w, b):
     """
-    Convenience layer that perorms an affine transform followed by a ReLU
+    便利层，通过仿射变换后的ReLU
 
     Inputs:
-    - x: Input to the affine layer
-    - w, b: Weights for the affine layer
+    - x: 仿射层的输入
+    - w, b: 仿射层的权重
 
     Returns a tuple of:
-    - out: Output from the ReLU
-    - cache: Object to give to the backward pass
+    - out: ReLU的输出
+    - cache: 反向传播的对象
     """
     a, fc_cache = affine_forward(x, w, b)
     out, relu_cache = relu_forward(a)
@@ -21,7 +21,7 @@ def affine_relu_forward(x, w, b):
 
 def affine_relu_backward(dout, cache):
     """
-    Backward pass for the affine-relu convenience layer
+    仿射-relu便利层的反向传播
     """
     fc_cache, relu_cache = cache
     da = relu_backward(dout, relu_cache)

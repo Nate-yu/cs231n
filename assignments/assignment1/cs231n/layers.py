@@ -5,34 +5,32 @@ import numpy as np
 
 def affine_forward(x, w, b):
     """
-    Computes the forward pass for an affine (fully-connected) layer.
+    计算仿射(全连接)层的前向传递。
 
-    The input x has shape (N, d_1, ..., d_k) and contains a minibatch of N
-    examples, where each example x[i] has shape (d_1, ..., d_k). We will
-    reshape each input into a vector of dimension D = d_1 * ... * d_k, and
-    then transform it to an output vector of dimension M.
+    输入x的形状为(N, d_1, ..., d_k)，包含一个大小为N的小批量样本，其中每个样本x[i]的形状为(d_1, ..., d_k)。
+    我们将把每个输入重塑成维度为D = d_1 * ... * d_k的向量，然后将其转换成维度为M的输出向量。
 
     Inputs:
-    - x: A numpy array containing input data, of shape (N, d_1, ..., d_k)
-    - w: A numpy array of weights, of shape (D, M)
-    - b: A numpy array of biases, of shape (M,)
+    - x: 包含形状为(N, d_1，…，d_k)的输入数据的numpy数组。
+    - w: 形状为(D, M)的权值numpy数组
+    - b: 一个形状为(M，)的偏置数组
 
     Returns a tuple of:
-    - out: output, of shape (N, M)
+    - out: 输出，形状为(N, M)
     - cache: (x, w, b)
     """
     out = None
     ###########################################################################
-    # TODO: Implement the affine forward pass. Store the result in out. You   #
-    # will need to reshape the input into rows.                               #
+    # TODO: 实现仿射前向传播。将结果存储在out中。你将需要将输入重塑为行。          #
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    # 将输入x重塑成一个一维数组，具体来说，我们需要将x的形状从(N, d_1, ..., d_k)变为(N * d_1 * ... * d_k)，以便进行矩阵乘法。
+    out = x.reshape((x.shape[0],-1)) @ w + b
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ###########################################################################
-    #                             END OF YOUR CODE                            #
+    #                       END OF YOUR CODE                                  #
     ###########################################################################
     cache = (x, w, b)
     return out, cache
@@ -40,19 +38,19 @@ def affine_forward(x, w, b):
 
 def affine_backward(dout, cache):
     """
-    Computes the backward pass for an affine layer.
+    计算一个仿射层的反向传递。
 
     Inputs:
-    - dout: Upstream derivative, of shape (N, M)
+    - dout: 上游导数，形状为(N, M)
     - cache: Tuple of:
-      - x: Input data, of shape (N, d_1, ... d_k)
-      - w: Weights, of shape (D, M)
-      - b: Biases, of shape (M,)
+      - x: 输入数据，形状为(N, d_1，…d_k)
+      - w: 权重，形状(D, M)
+      - b: 形状偏置(M，)
 
     Returns a tuple of:
-    - dx: Gradient with respect to x, of shape (N, d1, ..., d_k)
-    - dw: Gradient with respect to w, of shape (D, M)
-    - db: Gradient with respect to b, of shape (M,)
+    - dx: 关于x的梯度，形状为(N, d1，…，d_k)
+    - dw: 关于w的梯度，形状为(D, M)
+    - db: 关于b的梯度，形状为(M，)
     """
     x, w, b = cache
     dx, dw, db = None, None, None
@@ -61,7 +59,9 @@ def affine_backward(dout, cache):
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    dx = (dout @ w.T).reshape(x.shape)
+    dw = x.reshape((x.shape[0],-1)).T @ dout
+    db = np.sum(dout, axis=0)
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ###########################################################################
@@ -72,22 +72,22 @@ def affine_backward(dout, cache):
 
 def relu_forward(x):
     """
-    Computes the forward pass for a layer of rectified linear units (ReLUs).
+    计算一层整流线性单元(relu)的正向传播。
 
     Input:
-    - x: Inputs, of any shape
+    - x: 任何形状的输入
 
     Returns a tuple of:
-    - out: Output, of the same shape as x
+    - out: 输出，与x的形状相同
     - cache: x
     """
     out = None
     ###########################################################################
-    # TODO: Implement the ReLU forward pass.                                  #
+    # TODO: 实现 ReLU 前向传播                                  #
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    out = np.maximum(0,x)
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ###########################################################################
@@ -99,22 +99,25 @@ def relu_forward(x):
 
 def relu_backward(dout, cache):
     """
-    Computes the backward pass for a layer of rectified linear units (ReLUs).
+    计算一层整流线性单元(relu)的反向传播。
 
     Input:
-    - dout: Upstream derivatives, of any shape
-    - cache: Input x, of same shape as dout
+    - dout: 上游梯度，任何形状
+    - cache: 输入x， 与dout形状相同
+    因为relu(x) = max(0,x)
+    所以如果x < 0,那么该点的梯度为0，因此只需要将dout中对应 x < 0 的位置的元素变成0就行，其他位置不动
 
     Returns:
-    - dx: Gradient with respect to x
+    - dx: 关于x的梯度
     """
     dx, x = None, cache
     ###########################################################################
-    # TODO: Implement the ReLU backward pass.                                 #
+    # TODO: 实现ReLU的反向传播                                 #
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    # x>0: dx=dout; x<=0: dx=0
+    dx = np.multiply(dout, (x>0))
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ###########################################################################
@@ -754,56 +757,86 @@ def spatial_groupnorm_backward(dout, cache):
 
 def svm_loss(x, y):
     """
-    Computes the loss and gradient using for multiclass SVM classification.
+    计算用于多类支持向量机分类的损失和梯度。
 
     Inputs:
-    - x: Input data, of shape (N, C) where x[i, j] is the score for the jth
-      class for the ith input.
-    - y: Vector of labels, of shape (N,) where y[i] is the label for x[i] and
-      0 <= y[i] < C
+    - x: 输入数据，形状为(N, C)，其中x[i, j]为第i次输入的第j类得分。
+    - y: 形状为(N,)的标签向量，其中y[i]是x[i]的标签，且0 <= y[i] < C
 
     Returns a tuple of:
-    - loss: Scalar giving the loss
-    - dx: Gradient of the loss with respect to x
+    - loss: 表示loss的标量
+    - dx: loss对x的梯度
     """
-    loss, dx = None, None
+    loss, dx = 0, 0
 
     ###########################################################################
     # TODO: Copy over your solution from A1.
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    # 样本数量
+    num_train = x.shape[0]
+
+    # 获取正确分类的分数
+    scores_correct = x[range(num_train),y].reshape((x.shape[0],1))
+    # 计算一组预测得分（scores_correct）与正确答案之间的边距（margins）
+    margins = np.maximum(0, x-scores_correct+1)
+    # 将正确分类的分数置为0
+    margins[range(num_train),y] = 0
+    # 边距margins即为每个数据的损失
+    loss += np.sum(margins)
+    loss /= num_train
+
+    # 计算梯度
+    margins[margins > 0] = 1 # 将margins数组中大于0的元素替换为1，这是为了计算最大值和最小值。
+    row_sum = np.sum(margins, axis=1) # 计算row_sum，即每行的和。
+    margins[range(num_train),y] = -row_sum # 将margins数组中y对应的元素（标签数据）设置为-row_sum，以避免在计算梯度时考虑这些元素。
+    dx = margins
+    dx /= num_train
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ###########################################################################
-    #                             END OF YOUR CODE                            #
+    #  END OF YOUR CODE                         #
     ###########################################################################
     return loss, dx
 
 
 def softmax_loss(x, y):
     """
-    Computes the loss and gradient for softmax classification.
+    计算用于softmax分类的损失和梯度。
 
     Inputs:
-    - x: Input data, of shape (N, C) where x[i, j] is the score for the jth
-      class for the ith input.
-    - y: Vector of labels, of shape (N,) where y[i] is the label for x[i] and
-      0 <= y[i] < C
+    - x: I输入数据，形状为(N, C)，其中x[i, j]为第i次输入的第j类得分。
+    - y: 形状为(N，)的标签向量，其中y[i]是x[i]的标签，且0 <= y[i] < C
 
     Returns a tuple of:
-    - loss: Scalar giving the loss
-    - dx: Gradient of the loss with respect to x
+    - loss: 表示loss的标量
+    - dx: loss对x的梯度
     """
-    loss, dx = None, None
+    loss, dx = 0, 0
 
     ###########################################################################
     # TODO: Copy over your solution from A1.
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    # 训练数据的数量
+    num_train = x.shape[0]
+    # 取幂级数(下面有种增加数值稳定的函数，防止指数函数太大爆炸影响真正的效果)
+    scores = np.exp(x-x.max(axis=1, keepdims=True))
+    # 计算所有概率
+    p = scores / np.sum(scores, axis = 1, keepdims = True)
+
+    # 计算loss
+    loss += np.sum(-np.log(p[range(num_train),y]))
+
+    # 计算梯度
+    p[range(num_train),y] -= 1
+    dx += p
+
+    # 正则项
+    loss /= num_train
+    dx /= num_train
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ###########################################################################

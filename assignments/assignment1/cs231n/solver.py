@@ -14,25 +14,14 @@ from cs231n import optim
 
 class Solver(object):
     """
-    A Solver encapsulates all the logic necessary for training classification
-    models. The Solver performs stochastic gradient descent using different
-    update rules defined in optim.py.
+    解算器封装了训练分类模型所需的所有逻辑。解算器使用optimal.py中定义的不同更新规则执行随机梯度下降。
 
-    The solver accepts both training and validataion data and labels so it can
-    periodically check classification accuracy on both training and validation
-    data to watch out for overfitting.
+    解算器接受训练和验证数据以及标签，因此它可以定期检查训练数据和验证数据的分类准确性，以注意过度拟合。
 
-    To train a model, you will first construct a Solver instance, passing the
-    model, dataset, and various options (learning rate, batch size, etc) to the
-    constructor. You will then call the train() method to run the optimization
-    procedure and train the model.
+    要训练模型，您将首先构造一个解算器实例，将模型、数据集和各种选项（学习率、批量大小等）传递给构造函数。然后，您将调用train()方法来运行优化过程并训练模型。
 
-    After the train() method returns, model.params will contain the parameters
-    that performed best on the validation set over the course of training.
-    In addition, the instance variable solver.loss_history will contain a list
-    of all losses encountered during training and the instance variables
-    solver.train_acc_history and solver.val_acc_history will be lists of the
-    accuracies of the model on the training and validation set at each epoch.
+    在train()方法返回后，model.params将包含在训练过程中对验证集执行得最好的参数。
+    此外，实例变量solver.loss_history将包含训练期间遇到的所有损失的列表，实例变量solver.train_acc_history和solver.val_acc_hestory将是每个历元的训练和验证集上的模型精度列表。
 
     Example usage might look something like this:
 
@@ -54,30 +43,23 @@ class Solver(object):
     solver.train()
 
 
-    A Solver works on a model object that must conform to the following API:
+    解算器处理必须符合以下API的模型对象：
 
-    - model.params must be a dictionary mapping string parameter names to numpy
-      arrays containing parameter values.
+    - model.params必须是一个字典，将字符串参数名称映射到包含参数值的numpy数组。
 
-    - model.loss(X, y) must be a function that computes training-time loss and
-      gradients, and test-time classification scores, with the following inputs
-      and outputs:
+    - model.loss(X, y) 必须是一个计算训练时间损失和梯度以及测试时间分类分数的函数，具有以下输入和输出：
 
       Inputs:
-      - X: Array giving a minibatch of input data of shape (N, d_1, ..., d_k)
-      - y: Array of labels, of shape (N,) giving labels for X where y[i] is the
-        label for X[i].
+      - X: 数组，给出形状为（N，d_1，…，d_k）的输入数据的小批量
+      - y: 标签数组，形状为（N，），给出X的标签，其中y[i]是X[i]的标签。
 
       Returns:
-      If y is None, run a test-time forward pass and return:
-      - scores: Array of shape (N, C) giving classification scores for X where
-        scores[i, c] gives the score of class c for X[i].
+      如果y为None，则运行测试时间正向传递并返回：
+      - scores: 形状（N，C）的数组，给出X的分类分数，其中分数[i，C]给出X[i]的类C的分数。
 
-      If y is not None, run a training time forward and backward pass and
-      return a tuple of:
-      - loss: Scalar giving the loss
-      - grads: Dictionary with the same keys as self.params mapping parameter
-        names to gradients of the loss with respect to those parameters.
+      如果y不为None，则运行训练时间反向传播，并返回以下元组：
+      - loss: 给出损失的标量
+      - grads: 字典，具有与self相同的键。图将参数名称映射到相对于这些参数的损失梯度。
     """
 
     def __init__(self, model, data, **kwargs):
